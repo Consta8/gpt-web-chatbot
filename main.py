@@ -13,6 +13,7 @@ system_prompt = {
     "role": "system",
     "content": "You are a friendly and helpful support chatbot. Keep responses short, clear, and useful."
 }
+
 chat_history = [system_prompt]
 
 @app.route("/", methods=["GET", "POST"])
@@ -20,7 +21,7 @@ def index():
     global chat_history
 
     if request.method == "POST":
-        user_message = request.form.get("message")
+        user_message = request.form.get("message", "")
 
         if user_message.strip().lower() == "/clear":
             chat_history = [system_prompt]
@@ -36,9 +37,7 @@ def index():
         bot_reply = response.choices[0].message.content
         chat_history.append({"role": "assistant", "content": bot_reply})
 
-        return render_template("index.html", chat=chat_history[1:])  # exclude system message
-
-    return render_template("index.html", chat=chat_history[1:])
+    return render_template("index.html", chat=chat_history[1:])  # Skip system prompt
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=3000)
+    app.run(host="0.0.0.0", port=3000)
