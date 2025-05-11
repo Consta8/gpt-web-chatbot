@@ -1,121 +1,46 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GPT ChatBot</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f7f7f7;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    h1 {
-      color: #333;
-    }
-
-    .controls {
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 10px;
-    }
-
-    .chat {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-      max-width: 600px;
-      margin-bottom: 20px;
-    }
-
-    .bubble {
-      padding: 12px 16px;
-      border-radius: 15px;
-      max-width: 90%;
-      width: fit-content;
-      word-wrap: break-word;
-    }
-
-    .user {
-      align-self: flex-end;
-      background-color: #cde4ff;
-      border-bottom-right-radius: 0;
-    }
-
-    .assistant {
-      align-self: flex-start;
-      background-color: #d4f9d4;
-      border-bottom-left-radius: 0;
-    }
-
-    form {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-      max-width: 600px;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      background: #333;
-      color: white;
-      cursor: pointer;
-    }
-
-    @media (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
-
-      .chat, form, .controls {
-        width: 100%;
-      }
-    }
-  </style>
+  <title>AI Support Chatbot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h1>GPT ChatBot</h1>
-
-  <div class="controls">
-    <form method="POST" action="/">
-      <input type="hidden" name="message" value="/clear">
-      <button>🧹 Clear</button>
+  <div class="chat-button" onclick="toggleChat()">Need help?</div>
+  <div class="chat-widget" id="chatWidget">
+    <div class="chat-header">💬 AI Assistant <span onclick="toggleChat()" class="close-btn">×</span></div>
+    <div class="chat-messages" id="chatMessages">
+      {% for message in chat %}
+        <div class="bubble {{ message.role }}">
+          <div class="msg">{{ message.content }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    <form method="POST" class="chat-form" onsubmit="return submitMessage();">
+      <input type="text" name="message" id="msgInput" placeholder="Type your message..." autocomplete="off">
+      <button type="submit">Send</button>
     </form>
   </div>
 
-  <div class="chat">
-    {% for msg in chat %}
-      <div class="bubble {{ msg.role }}">{{ msg.content }}</div>
-    {% endfor %}
-  </div>
+<script>
+  function toggleChat() {
+    document.getElementById("chatWidget").classList.toggle("open");
+    scrollToBottom();
+  }
 
-  <form method="POST" action="/">
-    <input type="text" name="message" placeholder="Type your message..." required autofocus>
-    <button type="submit">Send</button>
-  </form>
+  function scrollToBottom() {
+    const msgBox = document.getElementById("chatMessages");
+    msgBox.scrollTop = msgBox.scrollHeight;
+  }
 
-  <script>
-    window.onload = () => {
-      window.scrollTo(0, document.body.scrollHeight);
-    };
-  </script>
+  function submitMessage() {
+    const input = document.getElementById("msgInput");
+    if (!input.value.trim()) return false;
+    return true;
+  }
+
+  window.onload = scrollToBottom;
+</script>
 </body>
 </html>
